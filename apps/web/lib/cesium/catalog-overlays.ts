@@ -10,13 +10,16 @@ export function syncCatalogOverlays(
   options: {
     showFootprints: boolean;
     showIdentifiers: boolean;
+    hiddenBuildingIds?: Set<string>;
   },
   entityIndex: Map<string, import("cesium").Entity>,
 ) {
   if (!catalog) return;
 
   const wantIds = new Set<string>();
+  const hidden = options.hiddenBuildingIds ?? new Set<string>();
   for (const building of catalog.buildings) {
+    if (hidden.has(building.id)) continue;
     if (options.showFootprints) {
       wantIds.add(`${FOOTPRINT_PREFIX}${building.id}`);
     }
@@ -34,6 +37,7 @@ export function syncCatalogOverlays(
 
   if (options.showFootprints) {
     for (const building of catalog.buildings) {
+      if (hidden.has(building.id)) continue;
       const id = `${FOOTPRINT_PREFIX}${building.id}`;
       if (entityIndex.has(id)) continue;
       const ring = building.footprint_wgs84.flat();
@@ -54,6 +58,7 @@ export function syncCatalogOverlays(
 
   if (options.showIdentifiers) {
     for (const building of catalog.buildings) {
+      if (hidden.has(building.id)) continue;
       const id = `${ID_LABEL_PREFIX}${building.id}`;
       if (entityIndex.has(id)) continue;
       const entity = viewer.entities.add({

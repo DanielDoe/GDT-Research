@@ -14,6 +14,15 @@ import {
   applyReconstructionMeshOpacity,
 } from "@/lib/cesium/building-materials";
 import { syncCatalogOverlays } from "@/lib/cesium/catalog-overlays";
+import { syncCatalogBuildingVolumes } from "@/lib/cesium/catalog-building-layer";
+import { createDemoDistrictTerrainProvider } from "@/lib/cesium/local-heightmap-terrain";
+import { FirstPersonWalkController } from "@/lib/cesium/first-person-controller";
+import {
+  reconstructionOpacityForVisualization,
+  resolveBuildingMaterial,
+  shouldShowGeneratedBuildings,
+} from "@/lib/scene-visualization";
+import { loadPersistedScene } from "@/lib/scene-persistence";
 import {
   configureCameraNavigation,
   configureSceneVisuals,
@@ -30,8 +39,11 @@ import {
   localOrigin,
   studyBbox,
 } from "@/lib/study-area";
+import { syncWeatherStation, WEATHER_ENTITY_ID } from "@/lib/cesium/weather-layer";
+import { useResearchAgentStore } from "@/stores/research-agent-store";
 import { useSceneObjectStore } from "@/stores/scene-object-store";
 import { useViewerStore } from "@/stores/viewer-store";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 
 const RECONSTRUCTED_GLB = "/assets/galveston/galveston-demo.glb";
 const TRANSFORM_JSON = "/assets/galveston/galveston-demo.transform.json";
@@ -50,6 +62,7 @@ export function CesiumViewer() {
   const imageryHandlesRef = useRef<ImageryStackHandles | null>(null);
   const catalogRef = useRef<BuildingCatalog | null>(null);
   const catalogOverlayEntities = useRef<Map<string, import("cesium").Entity>>(new Map());
+  const catalogVolumeEntities = useRef<Map<string, import("cesium").Entity>>(new Map());
   const terrainLoadingRef = useRef(false);
   const sceneObjectEntityIds = useRef<Map<string, import("cesium").Entity>>(new Map());
   const measureEntitiesRef = useRef<import("cesium").Entity[]>([]);
@@ -57,12 +70,14 @@ export function CesiumViewer() {
   const framedModelRef = useRef(false);
   const initCompleteRef = useRef(false);
   const [viewerReady, setViewerReady] = useState(false);
+  const [catalogVersion, setCatalogVersion] = useState(0);
   const loadGenerationRef = useRef(0);
   const fpsFramesRef = useRef(0);
   const fpsLastRef = useRef(performance.now());
   const skipPresetFlyRef = useRef(true);
   const initSessionRef = useRef(0);
   const didInitialCameraRef = useRef(false);
+  const walkControllerRef = useRef<FirstPersonWalkController | null>(null);
 
   function getLiveViewer() {
     const viewer = viewerRef.current;
@@ -87,9 +102,17 @@ export function CesiumViewer() {
     cameraPreset,
     cameraPresetEpoch,
     selectedObject,
+    sceneVisualization,
+    navigationMode,
+    hiddenBuildingIds,
+    walkMoveSpeedMps,
+    walkEyeHeightM,
+    restoreSceneModifications,
   } = useViewerStore();
 
   const sceneObjects = useSceneObjectStore((s) => s.objects);
+  const weatherLayer = useResearchAgentStore((state) => state.mapLayer);
+  const workspaceMode = useWorkspaceStore((state) => state.mode);
 
   async function frameReconstructedModel(Cesium: CesiumModule) {
     const viewer = getLiveViewer();
@@ -112,15 +135,45 @@ export function CesiumViewer() {
   ) {
     clearBuildingHighlight(viewer);
     const ring = building.footprint_wgs84.flat();
+    const base = building.ground_elevation_m ?? 0;
     highlightRef.current = viewer.entities.add({
       id: `gdt-highlight-${building.id}`,
       polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArray(ring),
-        height: 0,
-        extrudedHeight: building.height_m,
+        height: base,
+        extrudedHeight: base + building.height_m,
         material: Cesium.Color.fromBytes(0, 220, 255, 90),
         outline: true,
         outlineColor: Cesium.Color.fromBytes(0, 255, 255, 220),
+      },
+    });
+  }
+
+  function selectCatalogBuilding(
+    Cesium: CesiumModule,
+    viewer: import("cesium").Viewer,
+    building: BuildingCatalog["buildings"][number],
+  ) {
+    showBuildingHighlight(Cesium, viewer, building);
+    setSelectedObject({
+      kind: "building",
+      id: building.id,
+      label: building.name,
+      latitude: building.latitude,
+      longitude: building.longitude,
+      height_m: building.height_m,
+      elevation_m: building.ground_elevation_m ?? undefined,
+      footprint_area_m2: building.footprint_area_m2,
+      classification: building.building,
+      data_source: building.source,
+      quality: building.quality_class ?? building.height_source,
+      extra: {
+        osm_id: building.osm_id,
+        lod: building.lod ?? "LOD1",
+        reconstruction_method: building.reconstruction_method ?? null,
+        facade_material: building.facade_material ?? null,
+        roof_material: building.roof_material ?? null,
+        in_demo_district: building.in_demo_district ?? false,
       },
     });
   }
@@ -426,6 +479,46 @@ export function CesiumViewer() {
         const idStr =
           typeof pickedId === "string" ? pickedId : (pickedId as { id?: string })?.id;
 
+        if (idStr?.startsWith("gdt-obs")) {
+          const layer = useResearchAgentStore.getState().mapLayer;
+          const time = layer ? layer.clock[layer.index] : undefined;
+          const current = layer?.observations.find((row) => row.observed_at === time) ?? layer?.observations[layer.index ?? 0];
+          const readings = Object.fromEntries(
+            (layer?.series ?? []).map((series) => {
+              const row = series.observations.find((item) => item.observed_at === time);
+              return [series.variable, row?.value == null ? row?.quality_flag ?? "missing" : `${row.value} ${series.unit}`];
+            }),
+          );
+          setSelectedObject({
+            kind: "observation",
+            id: layer?.stationId || WEATHER_ENTITY_ID,
+            label: layer?.title,
+            latitude: layer?.latitude,
+            longitude: layer?.longitude,
+            data_source: layer?.sourceLabel,
+            quality: current?.quality_flag ?? layer?.dataKind,
+            extra: {
+              data_kind: layer?.dataKind ?? null,
+              observed_at: time ?? null,
+              ...readings,
+              note: "Gauge playback. The column, disc, and arrow are symbols for the station report, not flood depth or extent.",
+            },
+          });
+          return;
+        }
+
+        if (idStr?.startsWith("gdt-catalog-bldg-")) {
+          const catalog = catalogRef.current;
+          const buildingId = idStr
+            .replace("gdt-catalog-bldg-", "")
+            .replace(/-roof$/, "");
+          const building = catalog?.buildings.find((b) => b.id === buildingId);
+          if (building && !useViewerStore.getState().hiddenBuildingIds.includes(building.id)) {
+            selectCatalogBuilding(Cesium, viewer, building);
+            return;
+          }
+        }
+
         if (idStr?.startsWith("gdt-demo-")) {
           useSceneObjectStore.getState().selectObject(idStr);
           const obj = useSceneObjectStore.getState().objects.find((o) => o.id === idStr);
@@ -446,23 +539,20 @@ export function CesiumViewer() {
         const lon = Cesium.Math.toDegrees(carto.longitude);
         const lat = Cesium.Math.toDegrees(carto.latitude);
         const catalog = catalogRef.current;
-        if (catalog && useViewerStore.getState().buildingSourceMode === "gdt_reconstructed") {
-          const nearest = findNearestBuilding(catalog, lon, lat);
+        const sourceMode = useViewerStore.getState().buildingSourceMode;
+        if (
+          catalog &&
+          (sourceMode === "gdt_reconstructed" || sourceMode === "gdt_catalog_lod2")
+        ) {
+          const nearest = findNearestBuilding(
+            catalog,
+            lon,
+            lat,
+            80,
+            new Set(useViewerStore.getState().hiddenBuildingIds),
+          );
           if (nearest) {
-            showBuildingHighlight(Cesium, viewer, nearest);
-            setSelectedObject({
-              kind: "building",
-              id: nearest.id,
-              label: nearest.name,
-              latitude: nearest.latitude,
-              longitude: nearest.longitude,
-              height_m: nearest.height_m,
-              footprint_area_m2: nearest.footprint_area_m2,
-              classification: nearest.building,
-              data_source: nearest.source,
-              quality: nearest.height_source,
-              extra: { osm_id: nearest.osm_id },
-            });
+            selectCatalogBuilding(Cesium, viewer, nearest);
             return;
           }
         }
@@ -476,6 +566,7 @@ export function CesiumViewer() {
 
       void loadBuildingCatalog().then((catalog) => {
         catalogRef.current = catalog;
+        setCatalogVersion((version) => version + 1);
         syncCatalogOverlays(Cesium, viewer, catalog, {
           showFootprints: useViewerStore.getState().layers.buildingFootprints,
           showIdentifiers: useViewerStore.getState().layers.buildingIdentifiers,
@@ -486,6 +577,11 @@ export function CesiumViewer() {
 
       setStatus({ loadingMessage: null });
       applyCameraPreset(viewer, Cesium, "downtown_3d");
+
+      const persisted = loadPersistedScene();
+      if (persisted?.hiddenBuildingIds?.length) {
+        restoreSceneModifications(persisted.hiddenBuildingIds);
+      }
 
       initCompleteRef.current = true;
       didInitialCameraRef.current = true;
@@ -611,7 +707,10 @@ export function CesiumViewer() {
         buildingSourceMode === "reference_osm" && layers.referenceBuildings;
     }
 
-    const showGdt = buildingSourceMode === "gdt_reconstructed" && layers.reconstructedBuildings;
+    const showGdt =
+      shouldShowGeneratedBuildings(sceneVisualization) &&
+      buildingSourceMode === "gdt_reconstructed" &&
+      layers.reconstructedBuildings;
     if (reconstructedRef.current) {
       reconstructedRef.current.show = showGdt;
     } else if (showGdt) {
@@ -622,17 +721,45 @@ export function CesiumViewer() {
       });
     }
 
-    if (!showGdt) {
+    const showCatalogVolumes =
+      mapMode !== "satellite" &&
+      shouldShowGeneratedBuildings(sceneVisualization) &&
+      buildingSourceMode === "gdt_catalog_lod2" &&
+      layers.catalogVolumes;
+    syncCatalogBuildingVolumes(
+      Cesium,
+      viewer,
+      catalogRef.current,
+      {
+        show: showCatalogVolumes,
+        hiddenBuildingIds: new Set(hiddenBuildingIds),
+        debugGeometry:
+          mapMode === "research_3d" ||
+          sceneVisualization === "research_geometry" ||
+          buildingMaterialMode === "research",
+        demoDistrictOnly: false,
+        useEpqsGroundElevation: layers.localDemoTerrain,
+      },
+      catalogVolumeEntities.current,
+    );
+
+    if (!showGdt && !showCatalogVolumes) {
       clearBuildingHighlight(viewer);
     }
 
     viewer.scene.globe.show = layers.terrain || layers.imagery;
 
-    const effectiveMaterial =
-      mapMode === "research_3d" ? "research" : buildingMaterialMode;
+    const effectiveMaterial = resolveBuildingMaterial(
+      sceneVisualization,
+      mapMode === "research_3d" ? "research" : buildingMaterialMode,
+    );
     if (reconstructedRef.current?.model) {
       applyBuildingMaterialMode(Cesium, reconstructedRef.current.model, effectiveMaterial);
-      const meshOpacity = proceduralGroundVisible ? reconstructionMeshOpacity : 0.35;
+      const meshOpacity = reconstructionOpacityForVisualization(
+        sceneVisualization,
+        proceduralGroundVisible,
+        reconstructionMeshOpacity,
+      );
       applyReconstructionMeshOpacity(
         Cesium,
         reconstructedRef.current.model,
@@ -650,12 +777,80 @@ export function CesiumViewer() {
     mapMode,
     layers.referenceBuildings,
     layers.reconstructedBuildings,
+    layers.catalogVolumes,
     layers.terrain,
     layers.imagery,
     proceduralGroundVisible,
     reconstructionMeshOpacity,
+    sceneVisualization,
+    hiddenBuildingIds,
+    layers.localDemoTerrain,
     viewerReady,
+    catalogVersion,
   ]);
+
+  useEffect(() => {
+    const viewer = getLiveViewer();
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium || !viewerReady) return;
+
+    const controller = viewer.scene.screenSpaceCameraController;
+    if (navigationMode === "walk") {
+      if (!walkControllerRef.current) {
+        walkControllerRef.current = new FirstPersonWalkController(viewer, Cesium, {
+          moveSpeedMps: walkMoveSpeedMps,
+          eyeHeightM: walkEyeHeightM,
+        });
+      }
+      walkControllerRef.current.setMoveSpeed(walkMoveSpeedMps);
+      walkControllerRef.current.setEyeHeight(walkEyeHeightM);
+      walkControllerRef.current.start();
+      controller.enableLook = false;
+      controller.enableRotate = false;
+      controller.enableTranslate = false;
+      controller.enableZoom = false;
+      controller.enableTilt = false;
+    } else {
+      walkControllerRef.current?.stop();
+      configureCameraNavigation(viewer);
+      if (navigationMode === "fly") {
+        controller.enableLook = true;
+        controller.enableTranslate = true;
+        controller.enableTilt = true;
+        controller.enableCollisionDetection = false;
+      }
+    }
+
+    return () => {
+      walkControllerRef.current?.stop();
+    };
+  }, [navigationMode, viewerReady, walkMoveSpeedMps, walkEyeHeightM]);
+
+  useEffect(() => {
+    if (!viewerReady) return;
+    const hidden = new Set(hiddenBuildingIds);
+    const viewer = getLiveViewer();
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium) return;
+    syncCatalogOverlays(
+      Cesium,
+      viewer,
+      catalogRef.current,
+      {
+        showFootprints: layers.buildingFootprints,
+        showIdentifiers: layers.buildingIdentifiers,
+        hiddenBuildingIds: hidden,
+      },
+      catalogOverlayEntities.current,
+    );
+    if (
+      selectedObject?.kind === "building" &&
+      selectedObject.id &&
+      hidden.has(selectedObject.id)
+    ) {
+      clearBuildingHighlight(viewer);
+    }
+  }, [hiddenBuildingIds, layers.buildingFootprints, layers.buildingIdentifiers, selectedObject?.id, selectedObject?.kind, viewerReady]);
 
   useEffect(() => {
     if (!viewerReady) return;
@@ -676,39 +871,79 @@ export function CesiumViewer() {
     const Cesium = cesiumRef.current;
     if (!viewer || !Cesium) return;
 
-    const wantsTerrain = mapMode === "terrain_3d" || layers.terrain;
+    const useLocalDemo = layers.localDemoTerrain && mapMode !== "satellite";
     const ionPresent = (process.env.NEXT_PUBLIC_CESIUM_ION_ACCESS_TOKEN ?? "").trim().length > 0;
 
+    if (mapMode === "research_3d") {
+      viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#221a45");
+      viewer.scene.globe.showGroundAtmosphere = false;
+    } else if (mapMode === "terrain_3d") {
+      viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#6d7d58");
+      viewer.scene.globe.showGroundAtmosphere = true;
+    } else {
+      viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#1c2834");
+      viewer.scene.globe.showGroundAtmosphere = true;
+    }
+
+    let cancelled = false;
     async function syncTerrain() {
-      if (!Cesium || terrainLoadingRef.current) return;
-      if (!wantsTerrain || !ionPresent) {
-        if (!wantsTerrain && viewer) {
-          viewer.terrainProvider = new Cesium.EllipsoidTerrainProvider();
-          setStatus({ terrainSource: "ellipsoid" });
-        }
-        return;
-      }
+      if (!Cesium || !viewer) return;
+      const flatPhoto =
+        mapMode === "satellite" || mapMode === "street" || mapMode === "hybrid" || mapMode === "research_3d";
       terrainLoadingRef.current = true;
       try {
-        viewer!.terrainProvider = await Cesium.createWorldTerrainAsync();
-        setStatus({ terrainSource: "cesium_world" });
-      } catch (err) {
-        console.warn("Cesium World Terrain unavailable:", err);
+        if (useLocalDemo && mapMode === "terrain_3d") {
+          const local = await createDemoDistrictTerrainProvider(Cesium);
+          if (cancelled || !local) return;
+          viewer.terrainProvider = local;
+          setStatus({ terrainSource: "demo_epqs_heightmap" });
+          return;
+        }
+        if (flatPhoto) {
+          viewer.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+          setStatus({ terrainSource: "ellipsoid" });
+          return;
+        }
+        try {
+          const elevation = await Cesium.ArcGISTiledElevationTerrainProvider.fromUrl(
+            "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer",
+          );
+          if (cancelled) return;
+          viewer.terrainProvider = elevation;
+          setStatus({ terrainSource: "arcgis_world_elevation" });
+          return;
+        } catch (err) {
+          console.warn("ArcGIS World Elevation unavailable:", err);
+        }
+        if (ionPresent) {
+          try {
+            const world = await Cesium.createWorldTerrainAsync();
+            if (cancelled) return;
+            viewer.terrainProvider = world;
+            setStatus({ terrainSource: "cesium_world" });
+            return;
+          } catch (err) {
+            console.warn("Cesium World Terrain unavailable:", err);
+          }
+        }
+        if (cancelled) return;
+        viewer.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+        setStatus({ terrainSource: "ellipsoid" });
       } finally {
         terrainLoadingRef.current = false;
       }
     }
 
     void syncTerrain();
-  }, [mapMode, layers.terrain, viewerReady, setStatus]);
+    return () => {
+      cancelled = true;
+    };
+  }, [mapMode, layers.terrain, layers.localDemoTerrain, viewerReady, setStatus]);
 
   useEffect(() => {
     const viewer = getLiveViewer();
     if (!viewer || !viewerReady) return;
-    const exaggeration =
-      terrainExaggerationEnabled && (mapMode === "terrain_3d" || layers.terrain)
-        ? terrainExaggeration
-        : 1;
+    const exaggeration = mapMode === "terrain_3d" ? terrainExaggeration : 1;
     viewer.scene.verticalExaggeration = exaggeration;
     viewer.scene.verticalExaggerationRelativeHeight = 0;
   }, [
@@ -718,22 +953,6 @@ export function CesiumViewer() {
     layers.terrain,
     viewerReady,
   ]);
-
-  useEffect(() => {
-    const viewer = getLiveViewer();
-    const Cesium = cesiumRef.current;
-    if (!viewer || !Cesium || !viewerReady) return;
-    syncCatalogOverlays(
-      Cesium,
-      viewer,
-      catalogRef.current,
-      {
-        showFootprints: layers.buildingFootprints,
-        showIdentifiers: layers.buildingIdentifiers,
-      },
-      catalogOverlayEntities.current,
-    );
-  }, [layers.buildingFootprints, layers.buildingIdentifiers, viewerReady]);
 
   useEffect(() => {
     const viewer = getLiveViewer();
@@ -749,6 +968,24 @@ export function CesiumViewer() {
     if (!viewer || !Cesium || !viewerReady) return;
     syncSceneObjects(Cesium, viewer);
   }, [sceneObjects, layers.customAssets, layers.researchAssets, viewerReady]);
+
+  useEffect(() => {
+    const viewer = getLiveViewer();
+    if (!viewer || !viewerReady || workspaceMode !== "map") return;
+    viewer.resize();
+    viewer.scene.requestRender();
+  }, [workspaceMode, viewerReady]);
+
+  useEffect(() => {
+    const viewer = getLiveViewer();
+    const Cesium = cesiumRef.current;
+    if (!viewer || !Cesium || !viewerReady) return;
+    try {
+      syncWeatherStation(Cesium, viewer, weatherLayer, layers.researchAssets);
+    } catch (error) {
+      console.error("Weather station marker was not drawn.", error);
+    }
+  }, [weatherLayer, layers.researchAssets, viewerReady, workspaceMode]);
 
   useEffect(() => {
     const viewer = getLiveViewer();

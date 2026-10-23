@@ -13,6 +13,9 @@ export function ObjectInspector() {
     status,
     flyToSelectedBuilding,
     setCameraPreset,
+    hideBuilding,
+    hiddenBuildingIds,
+    setStatus,
   } = useViewerStore();
   const sceneObjects = useSceneObjectStore((s) => s.objects);
   const updateObject = useSceneObjectStore((s) => s.updateObject);
@@ -97,7 +100,19 @@ export function ObjectInspector() {
                   <dd>{selectedObject.quality}</dd>
                 </div>
               )}
+              {selectedObject.extra &&
+                Object.entries(selectedObject.extra).map(([key, value]) => (
+                  <div key={key}>
+                    <dt className="text-slate-500">{key}</dt>
+                    <dd>{value == null ? "—" : String(value)}</dd>
+                  </div>
+                ))}
             </dl>
+            {selectedObject.kind === "observation" && (
+              <p className="mt-3 text-[11px] text-slate-400">
+                This is a station observation. It does not describe the whole study area, and the marker height is only there so the point stays visible.
+              </p>
+            )}
             {selectedObject.kind === "building" && (
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button type="button" size="sm" variant="secondary" onClick={() => flyToSelectedBuilding()}>
@@ -110,6 +125,32 @@ export function ObjectInspector() {
                   onClick={() => setCameraPreset("street_level")}
                 >
                   Street level
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={hiddenBuildingIds.includes(selectedObject.id)}
+                  onClick={() => hideBuilding(selectedObject.id)}
+                >
+                  Hide in scene
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={async () => {
+                    if (selectedObject.latitude == null || selectedObject.longitude == null) return;
+                    setStatus({
+                      pickedCoordinate: {
+                        latitude: selectedObject.latitude,
+                        longitude: selectedObject.longitude,
+                        height_m: selectedObject.height_m ?? 0,
+                      },
+                    });
+                  }}
+                >
+                  Log ground ref.
                 </Button>
               </div>
             )}

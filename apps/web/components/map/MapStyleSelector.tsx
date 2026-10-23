@@ -14,7 +14,7 @@ const modes: {
   {
     id: "satellite",
     label: "Satellite",
-    description: "Aerial imagery with 3D buildings",
+    description: "Flat aerial photo only",
     icon: Satellite,
     previewClass:
       "bg-[radial-gradient(circle_at_30%_20%,#3d6b4f_0%,#1a3d2e_40%,#0f172a_100%)]",
@@ -22,7 +22,7 @@ const modes: {
   {
     id: "street",
     label: "Street Map",
-    description: "Cartographic streets and labels",
+    description: "Street map with building masses",
     icon: Map,
     previewClass:
       "bg-[linear-gradient(135deg,#e2e8f0_0%,#94a3b8_35%,#64748b_100%)]",
@@ -30,7 +30,7 @@ const modes: {
   {
     id: "hybrid",
     label: "Hybrid",
-    description: "Satellite plus roads and place names",
+    description: "Aerial photo, roads, and buildings",
     icon: Layers,
     previewClass:
       "bg-[linear-gradient(180deg,#2d5a3d_0%,#1e293b_55%),repeating-linear-gradient(90deg,transparent,transparent_8px,rgba(255,255,255,0.15)_8px,rgba(255,255,255,0.15)_9px)]",
@@ -38,7 +38,7 @@ const modes: {
   {
     id: "terrain_3d",
     label: "3D Terrain",
-    description: "Elevation, imagery, and buildings",
+    description: "Relief and buildings, no photo",
     icon: Mountain,
     previewClass:
       "bg-[linear-gradient(160deg,#4ade80_0%,#166534_45%,#0c4a6e_100%)]",
@@ -46,7 +46,7 @@ const modes: {
   {
     id: "research_3d",
     label: "Research 3D",
-    description: "OSM2World geometry inspection",
+    description: "Inspectable research masses",
     icon: ScanSearch,
     previewClass:
       "bg-[linear-gradient(135deg,#6366f1_0%,#312e81_50%,#0f172a_100%)]",
@@ -103,8 +103,11 @@ export function MapStyleSelector() {
                   >
                     <Icon className="absolute bottom-1.5 right-1.5 h-4 w-4 text-white/90 drop-shadow" />
                   </div>
-                  <span className="px-2 py-1.5 text-[11px] font-medium text-slate-100">
-                    {mode.label}
+                  <span className="px-2 py-1.5">
+                    <span className="block text-[11px] font-medium text-slate-100">{mode.label}</span>
+                    <span className="mt-0.5 block text-[9px] leading-snug text-slate-400">
+                      {mode.description}
+                    </span>
                   </span>
                 </button>
               );

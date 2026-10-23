@@ -123,16 +123,17 @@ async function createStreetProvider(Cesium: typeof import("cesium")) {
 
 async function createReferenceProvider(Cesium: typeof import("cesium"), url: string) {
   configureArcGisCredentials(Cesium);
-  try {
-    return await Cesium.ArcGisMapServerImageryProvider.fromUrl(url, {
-      enablePickFeatures: false,
-    });
-  } catch {
-    return new Cesium.UrlTemplateImageryProvider({
-      url: OSM_TILE_URL,
-      credit: "© OpenStreetMap contributors (reference fallback)",
-    });
-  }
+  return Cesium.ArcGisMapServerImageryProvider.fromUrl(url, {
+    enablePickFeatures: false,
+  });
+}
+
+/** Transparent 1×1 placeholder when a reference overlay cannot be loaded. */
+function createEmptyOverlayProvider(Cesium: typeof import("cesium")) {
+  return new Cesium.SingleTileImageryProvider({
+    url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Zk2EAAAAASUVORK5CYII=",
+    rectangle: Cesium.Rectangle.fromDegrees(-180, -90, 180, 90),
+  });
 }
 
 export async function createImageryStack(
@@ -145,8 +146,20 @@ export async function createImageryStack(
 }> {
   const { provider, kind, detail } = await createSatelliteProvider(Cesium);
   const streetProvider = await createStreetProvider(Cesium);
-  const labelsProvider = await createReferenceProvider(Cesium, ESRI_REFERENCE_LABELS);
-  const roadLabelsProvider = await createReferenceProvider(Cesium, ESRI_REFERENCE_ROADS);
+  let labelsProvider: import("cesium").ImageryProvider;
+  let roadLabelsProvider: import("cesium").ImageryProvider;
+  try {
+    labelsProvider = await createReferenceProvider(Cesium, ESRI_REFERENCE_LABELS);
+  } catch (err) {
+    console.warn("Place-name reference overlay unavailable:", err);
+    labelsProvider = createEmptyOverlayProvider(Cesium);
+  }
+  try {
+    roadLabelsProvider = await createReferenceProvider(Cesium, ESRI_REFERENCE_ROADS);
+  } catch (err) {
+    console.warn("Road reference overlay unavailable:", err);
+    roadLabelsProvider = createEmptyOverlayProvider(Cesium);
+  }
 
   const satellite = viewer.imageryLayers.addImageryProvider(provider);
   const street = viewer.imageryLayers.addImageryProvider(streetProvider);

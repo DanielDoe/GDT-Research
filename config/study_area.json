@@ -13,6 +13,13 @@
     "east": -94.7895,
     "north": 29.3055
   },
+  "reconstruction_bbox_wgs84": {
+    "west": -94.82,
+    "south": 29.285,
+    "east": -94.77,
+    "north": 29.32,
+    "comment": "City-footprint extent shown in the viewer. Wider than the original OSM2World study box so oblique downtown views include surrounding blocks."
+  },
   "polygon_wgs84": {
     "type": "Polygon",
     "coordinates": [

@@ -1,0 +1,607 @@
+{
+  "type": "FeatureCollection",
+  "name": "gdt_demo_district_visual_proxy",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "gdt-building-520810852",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7971033,
+              29.3015416
+            ],
+            [
+              -94.7970159,
+              29.3012877
+            ],
+            [
+              -94.797114,
+              29.301262
+            ],
+            [
+              -94.7971862,
+              29.3014717
+            ],
+            [
+              -94.7971551,
+              29.3014798
+            ],
+            [
+              -94.7971704,
+              29.3015241
+            ],
+            [
+              -94.7971033,
+              29.3015416
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-520810852",
+        "osm_id": "520810852",
+        "name": "Building 520810852",
+        "height_m": 10.0,
+        "footprint_area_m2": 277.3,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-520810892",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7956463,
+              29.3015722
+            ],
+            [
+              -94.796045,
+              29.301469
+            ],
+            [
+              -94.7959836,
+              29.3012888
+            ],
+            [
+              -94.795585,
+              29.3013921
+            ],
+            [
+              -94.7956463,
+              29.3015722
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-520810892",
+        "osm_id": "520810892",
+        "name": "Building 520810892",
+        "height_m": 10.0,
+        "footprint_area_m2": 844.6,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-520810912",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7947507,
+              29.3018196
+            ],
+            [
+              -94.7949158,
+              29.3017763
+            ],
+            [
+              -94.7948775,
+              29.3016651
+            ],
+            [
+              -94.7947124,
+              29.3017083
+            ],
+            [
+              -94.7947507,
+              29.3018196
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-520810912",
+        "osm_id": "520810912",
+        "name": "Building 520810912",
+        "height_m": 10.0,
+        "footprint_area_m2": 216.4,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-520810957",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7959103,
+              29.301866
+            ],
+            [
+              -94.7960237,
+              29.3018367
+            ],
+            [
+              -94.7959343,
+              29.301574
+            ],
+            [
+              -94.7958209,
+              29.3016033
+            ],
+            [
+              -94.7959103,
+              29.301866
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-520810957",
+        "osm_id": "520810957",
+        "name": "Building 520810957",
+        "height_m": 10.0,
+        "footprint_area_m2": 350.2,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-878052171",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7968748,
+              29.3006851
+            ],
+            [
+              -94.7967752,
+              29.3007106
+            ],
+            [
+              -94.7967451,
+              29.3006213
+            ],
+            [
+              -94.7968051,
+              29.3006059
+            ],
+            [
+              -94.7967837,
+              29.3005424
+            ],
+            [
+              -94.7968233,
+              29.3005322
+            ],
+            [
+              -94.7968748,
+              29.3006851
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-878052171",
+        "osm_id": "878052171",
+        "name": "Building 878052171",
+        "height_m": 10.0,
+        "footprint_area_m2": 134.0,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-945601766",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.795321,
+              29.3009612
+            ],
+            [
+              -94.7951945,
+              29.3005915
+            ],
+            [
+              -94.7951265,
+              29.3006092
+            ],
+            [
+              -94.7949581,
+              29.300653
+            ],
+            [
+              -94.7950846,
+              29.3010227
+            ],
+            [
+              -94.795321,
+              29.3009612
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-945601766",
+        "osm_id": "945601766",
+        "name": "Galveston City Hall",
+        "height_m": 10.0,
+        "footprint_area_m2": 1028.5,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-1109024003",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7955656,
+              29.301995
+            ],
+            [
+              -94.7954637,
+              29.3016946
+            ],
+            [
+              -94.7957899,
+              29.3016108
+            ],
+            [
+              -94.7958951,
+              29.3019104
+            ],
+            [
+              -94.7955656,
+              29.301995
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-1109024003",
+        "osm_id": "1109024003",
+        "name": "Building 1109024003",
+        "height_m": 10.0,
+        "footprint_area_m2": 1157.1,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-1343269746",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7973189,
+              29.3011534
+            ],
+            [
+              -94.7972147,
+              29.3008487
+            ],
+            [
+              -94.7971646,
+              29.3008618
+            ],
+            [
+              -94.7971584,
+              29.3008436
+            ],
+            [
+              -94.7971266,
+              29.3008519
+            ],
+            [
+              -94.7971322,
+              29.3008685
+            ],
+            [
+              -94.7970918,
+              29.300879
+            ],
+            [
+              -94.7970858,
+              29.3008614
+            ],
+            [
+              -94.7970271,
+              29.3008767
+            ],
+            [
+              -94.7970332,
+              29.3008944
+            ],
+            [
+              -94.7968402,
+              29.3009446
+            ],
+            [
+              -94.7969448,
+              29.3012507
+            ],
+            [
+              -94.7973189,
+              29.3011534
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-1343269746",
+        "osm_id": "1343269746",
+        "name": "Building 1343269746",
+        "height_m": 10.0,
+        "footprint_area_m2": 1365.1,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-1343269747",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7966012,
+              29.3010659
+            ],
+            [
+              -94.7966174,
+              29.3011131
+            ],
+            [
+              -94.7966105,
+              29.3011149
+            ],
+            [
+              -94.7966249,
+              29.3011569
+            ],
+            [
+              -94.7966976,
+              29.301138
+            ],
+            [
+              -94.7966919,
+              29.3011212
+            ],
+            [
+              -94.7967407,
+              29.3011085
+            ],
+            [
+              -94.7967157,
+              29.3010355
+            ],
+            [
+              -94.7966895,
+              29.3010424
+            ],
+            [
+              -94.7966826,
+              29.3010223
+            ],
+            [
+              -94.7966255,
+              29.3010371
+            ],
+            [
+              -94.7966325,
+              29.3010577
+            ],
+            [
+              -94.7966012,
+              29.3010659
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-1343269747",
+        "osm_id": "1343269747",
+        "name": "Building 1343269747",
+        "height_m": 10.0,
+        "footprint_area_m2": 128.2,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-1343269748",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7963868,
+              29.3010478
+            ],
+            [
+              -94.7963128,
+              29.3010624
+            ],
+            [
+              -94.7963628,
+              29.3012561
+            ],
+            [
+              -94.7964368,
+              29.3012415
+            ],
+            [
+              -94.7963868,
+              29.3010478
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-1343269748",
+        "osm_id": "1343269748",
+        "name": "Building 1343269748",
+        "height_m": 10.0,
+        "footprint_area_m2": 162.8,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gdt-building-1343269749",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -94.7960182,
+              29.3017491
+            ],
+            [
+              -94.7960474,
+              29.301854
+            ],
+            [
+              -94.7961056,
+              29.3018417
+            ],
+            [
+              -94.7961084,
+              29.3018517
+            ],
+            [
+              -94.7961591,
+              29.301841
+            ],
+            [
+              -94.7961186,
+              29.3016952
+            ],
+            [
+              -94.7960603,
+              29.3017075
+            ],
+            [
+              -94.7960689,
+              29.3017384
+            ],
+            [
+              -94.7960182,
+              29.3017491
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "gdt_id": "gdt-building-1343269749",
+        "osm_id": "1343269749",
+        "name": "Building 1343269749",
+        "height_m": 10.0,
+        "footprint_area_m2": 157.2,
+        "lod": "LOD1",
+        "representation": "visual_proxy",
+        "collision": false,
+        "visual": true,
+        "height_source": "estimated:default",
+        "quality": "catalog_footprint_extrusion",
+        "note": "Extruded footprint \u2014 not mesh-accurate; replace with LiDAR/refined mesh for LOD2+."
+      }
+    }
+  ]
+}

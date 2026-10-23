@@ -48,15 +48,36 @@ powershell -ExecutionPolicy Bypass -File scripts\run_osm2world_pipeline.ps1
 
 This downloads OSM for the study area, runs OSM2World 0.4.0, and copies `galveston-demo.glb` into the web app.
 
+## Full reconstruction (LOD2 catalog + demo terrain + simulation exports)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_full_reconstruction_pipeline.ps1
+```
+
+Adds USGS EPQS ground elevations, procedural LOD2 materials metadata, demo-district heightmap terrain, collision GeoJSON, and refreshes `docs/GEOMETRY-AUDIT.md`.
+
+In the viewer, choose **GDT: Independent catalog volumes (LOD2)** or scene mode **High fidelity (demo district)** for per-building meshes with hide/select support.
+
 ## Study area
 
 Configured in `config/study_area.json` (~1.5 km² downtown Galveston). Sync a copy exists at `apps/web/lib/data/study_area.json` for the frontend.
+
+## Research agents
+
+The viewer is unchanged. **Map** configures the basemap, terrain, and reconstruction. **Agents** selects research families and, for Weather, requests real station observations.
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000
+```
+
+Rainfall and wind read NOAA ASOS reports (Iowa Environmental Mesonet historical hourly files, and the National Weather Service API for recent observations). Other agent families are registered and do not return data. The runtime catalog is SQLite under `data/catalog`. `database/migrations/001_agent_framework.sql` is the PostGIS schema for a server that has PostGIS installed.
 
 ## Tests
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r geospatial\requirements.txt
 .\.venv\Scripts\python.exe -m pytest tests
+.\.venv\Scripts\python.exe -m pytest tests -m integration
 cd apps/web && npm run build
 ```
 

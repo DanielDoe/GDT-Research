@@ -1,0 +1,27 @@
+{
+  "name": "High-fidelity demonstration district (Phase F)",
+  "description": "Two-block core near downtown Strand / 22nd St for LOD2+ experiments. Subset of the full study bbox.",
+  "crs": "EPSG:4326",
+  "bbox_wgs84": {
+    "west": -94.7972,
+    "south": 29.3006,
+    "east": -94.7948,
+    "north": 29.3022
+  },
+  "target_lod": "LOD2",
+  "data_priorities": [
+    "TNRIS / USGS 3DEP LiDAR for terrain and building heights",
+    "OSM footprints and tags",
+    "Municipal GIS where licensed",
+    "Authorized street-level photography only"
+  ],
+  "not_in_scope": [
+    "Downloading or redistributing proprietary photorealistic tile meshes",
+    "Unlicensed photogrammetry scraping"
+  ],
+  "photorealistic_preview": {
+    "status": "coverage_unverified",
+    "verify_at_wgs84": { "lon": -94.796, "lat": 29.301 },
+    "notes": "Optional streamed preview only if Map Tiles API probe succeeds; see docs/GALVESTON-HIGH-FIDELITY-DATA-ASSESSMENT.md"
+  }
+}

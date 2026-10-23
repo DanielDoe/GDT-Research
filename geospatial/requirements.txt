@@ -1,5 +1,6 @@
 fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
+httpx>=0.28.0
 sqlalchemy>=2.0.36
 geoalchemy2>=0.15.2
 pydantic>=2.10.0
@@ -10,6 +11,7 @@ pyproj>=3.7.0
 requests>=2.32.0
 osmnx>=2.0.0
 numpy>=2.1.0
+laspy[lazrs]>=2.5.4
 trimesh>=4.5.0
 pygltflib>=1.16.0
 pytest>=8.3.0

@@ -1,0 +1,68 @@
+{
+  "generated_on": "2026-10-23",
+  "glb": {
+    "path": "apps\\web\\public\\assets\\galveston\\galveston-demo.glb",
+    "size_bytes": 6103764,
+    "mesh_count": 1999,
+    "vertex_count": 88152,
+    "face_count": 29384,
+    "bounds_local_m": {
+      "min": [
+        -2270.055419921875,
+        0.0,
+        -1373.782958984375
+      ],
+      "max": [
+        2270.031494140625,
+        7.5,
+        1372.5089111328125
+      ],
+      "extent_xyz_m": [
+        4540.0869140625,
+        7.5,
+        2746.2918701171875
+      ]
+    },
+    "note": "OSM2World exports Y-up local ENU meters about study centroid; not per-building GLB nodes."
+  },
+  "catalog": {
+    "path": "apps\\web\\public\\assets\\galveston\\buildings-catalog.json",
+    "building_count": 566,
+    "height_m": {
+      "min": 6.4,
+      "max": 10.0,
+      "mean": 9.99363957597173,
+      "stdev": 0.15118555323822247
+    },
+    "height_source_counts": {
+      "estimated:default": 565,
+      "osm:building:levels": 1
+    },
+    "footprint_area_m2": {
+      "min": 2.4,
+      "max": 12196.0,
+      "mean": 433.4236749116608
+    },
+    "lod_assigned": "LOD1 (OSM footprint + OSM2World procedural walls/roofs)",
+    "per_building_mesh_in_glb": false
+  },
+  "study_area": {
+    "name": "Downtown Galveston demonstration area",
+    "bbox_wgs84": {
+      "west": -94.8018,
+      "south": 29.2975,
+      "east": -94.7895,
+      "north": 29.3055
+    },
+    "local_origin_wgs84": {
+      "latitude": 29.3015,
+      "longitude": -94.79565,
+      "comment": "Local ENU origin for exported GLB assets (centroid of demonstration bbox)."
+    }
+  },
+  "terrain_runtime": {
+    "default": "ellipsoid",
+    "with_cesium_ion_token": "Cesium.createWorldTerrainAsync()",
+    "local_lidar_dem": "not_yet_integrated"
+  }
+}

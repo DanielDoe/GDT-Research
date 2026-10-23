@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Expand, MapPin, Settings } from "lucide-react";
+import { Building2, Expand, Map, Settings, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   useViewerStore,
@@ -8,10 +8,14 @@ import {
   type InteractionTool,
   type ViewSceneMode,
 } from "@/stores/viewer-store";
+import { exitResearchScene } from "@/lib/agents/exit-scene";
+import { useResearchAgentStore } from "@/stores/research-agent-store";
+import { useWorkspaceStore, type WorkspaceMode } from "@/stores/workspace-store";
 
 const buildingModes: { value: BuildingSourceMode; label: string }[] = [
   { value: "reference_osm", label: "Reference: Cesium OSM Buildings (ion token)" },
-  { value: "gdt_reconstructed", label: "GDT: OSM2World reconstruction" },
+  { value: "gdt_reconstructed", label: "GDT: OSM2World GLB (LOD1)" },
+  { value: "gdt_catalog_lod2", label: "GDT: City footprints + LiDAR heights (LOD2)" },
   { value: "none", label: "Buildings off" },
 ];
 
@@ -31,6 +35,9 @@ export function TopBar() {
     interactionTool,
     setInteractionTool,
   } = useViewerStore();
+  const mode = useWorkspaceStore((state) => state.mode);
+  const setMode = useWorkspaceStore((state) => state.setMode);
+  const sceneTitle = useResearchAgentStore((state) => state.mapLayer?.title);
 
   return (
     <header className="flex min-h-14 flex-wrap items-center justify-between gap-2 border-b border-slate-800 bg-slate-950/90 px-4 py-2 backdrop-blur">
@@ -42,12 +49,38 @@ export function TopBar() {
         </div>
       </div>
 
-      <div className="hidden items-center gap-2 md:flex">
-        <MapPin className="h-4 w-4 text-slate-500" />
-        <span className="text-xs text-slate-300">{activeScene}</span>
+      <div className="flex rounded-md border border-slate-700 p-0.5">
+        <Button
+          type="button"
+          size="sm"
+          variant={mode === "map" ? "default" : "ghost"}
+          className="h-8 px-3 text-xs"
+          onClick={() => setMode("map" satisfies WorkspaceMode)}
+        >
+          <Map className="mr-1 h-3.5 w-3.5" />
+          Map
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={mode === "agents" ? "default" : "ghost"}
+          className="h-8 px-3 text-xs"
+          onClick={() => setMode("agents" satisfies WorkspaceMode)}
+        >
+          <Users className="mr-1 h-3.5 w-3.5" />
+          Agents
+        </Button>
       </div>
 
+      {sceneTitle && (
+        <Button type="button" size="sm" variant="secondary" className="h-8 text-xs" onClick={exitResearchScene}>
+          Exit scene
+        </Button>
+      )}
+
+      {mode === "map" && (
       <div className="flex flex-wrap items-center gap-2">
+        <span className="hidden text-xs text-slate-400 lg:inline">{activeScene}</span>
         <div className="flex rounded-md border border-slate-700 p-0.5">
           <Button
             type="button"
@@ -107,6 +140,7 @@ export function TopBar() {
           <Settings className="h-4 w-4" />
         </Button>
       </div>
+      )}
     </header>
   );
 }
