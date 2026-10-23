@@ -1,0 +1,10 @@
+[
+  {
+    "id": "gdt-reconstructed-city",
+    "source": "OpenStreetMap + OSM2World",
+    "latitude": 29.3015,
+    "longitude": -94.79565,
+    "height_m": null,
+    "name": "Downtown Galveston OSM2World tile"
+  }
+]

@@ -1,0 +1,38 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+apps/web/.next/
+apps/web/out/
+
+# Large geographic / 3D assets
+data/raw/**
+data/processed/**
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+data/manifests/*.json
+assets/**
+!assets/.gitkeep
+apps/web/public/assets/galveston/*.glb
+apps/web/public/cesium/
+
+# OSM2World distribution (download via script)
+geospatial/osm2world/OSM2World-*.zip
+geospatial/osm2world/jre/
+geospatial/osm2world/jre.zip
+geospatial/osm2world/bin/
+
+# Secrets
+.env
+.env.local
+*.pem
+
+# Office / OS
+~$*
+Thumbs.db
+Desktop.ini
+.DS_Store

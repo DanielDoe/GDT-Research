@@ -1,0 +1,117 @@
+{
+  "name": "Downtown Galveston demonstration area",
+  "description": "Initial ~1.5 km² study polygon with dense building coverage, road network, and landmark visibility near the historic downtown and waterfront.",
+  "crs": "EPSG:4326",
+  "city_center": {
+    "latitude": 29.3013,
+    "longitude": -94.7977,
+    "comment": "Approximate city-center camera reference only, not the study boundary."
+  },
+  "bbox_wgs84": {
+    "west": -94.8018,
+    "south": 29.2975,
+    "east": -94.7895,
+    "north": 29.3055
+  },
+  "polygon_wgs84": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-94.8018, 29.2975],
+        [-94.7895, 29.2975],
+        [-94.7895, 29.3055],
+        [-94.8018, 29.3055],
+        [-94.8018, 29.2975]
+      ]
+    ]
+  },
+  "utm_working_crs": "EPSG:32615",
+  "local_origin_wgs84": {
+    "latitude": 29.3015,
+    "longitude": -94.79565,
+    "comment": "Local ENU origin for exported GLB assets (centroid of demonstration bbox)."
+  },
+  "default_building_height_m": 10,
+  "camera_presets": {
+    "galveston_aerial": {
+      "label": "Galveston aerial overview",
+      "longitude": -94.7977,
+      "latitude": 29.3013,
+      "height_m": 8500,
+      "heading_deg": 0,
+      "pitch_deg": -55
+    },
+    "downtown_3d": {
+      "label": "Downtown 3D perspective",
+      "longitude": -94.7959,
+      "latitude": 29.3008,
+      "height_m": 320,
+      "heading_deg": 48,
+      "pitch_deg": -36
+    },
+    "street_level": {
+      "label": "Street-level exploration",
+      "longitude": -94.7954,
+      "latitude": 29.3012,
+      "height_m": 6,
+      "heading_deg": 72,
+      "pitch_deg": -6
+    },
+    "harbor_perspective": {
+      "label": "Harbor perspective",
+      "longitude": -94.7912,
+      "latitude": 29.3075,
+      "height_m": 420,
+      "heading_deg": 210,
+      "pitch_deg": -32
+    },
+    "building_closeup": {
+      "label": "Selected building close-up",
+      "longitude": -94.79565,
+      "latitude": 29.3015,
+      "height_m": 95,
+      "heading_deg": 35,
+      "pitch_deg": -24
+    },
+    "study_area": {
+      "label": "Demonstration study area",
+      "longitude": -94.79565,
+      "latitude": 29.3015,
+      "height_m": 260,
+      "heading_deg": 35,
+      "pitch_deg": -32
+    },
+    "downtown": {
+      "label": "Downtown Galveston",
+      "longitude": -94.79565,
+      "latitude": 29.3015,
+      "height_m": 420,
+      "heading_deg": 25,
+      "pitch_deg": -38
+    },
+    "harbor": {
+      "label": "Harbor area",
+      "longitude": -94.7898,
+      "latitude": 29.3092,
+      "height_m": 600,
+      "heading_deg": 180,
+      "pitch_deg": -40
+    },
+    "island_overview": {
+      "label": "Galveston Island overview",
+      "longitude": -94.85,
+      "latitude": 29.28,
+      "height_m": 25000,
+      "heading_deg": 0,
+      "pitch_deg": -60
+    },
+    "galveston_overview": {
+      "label": "Galveston overview (legacy)",
+      "longitude": -94.7977,
+      "latitude": 29.3013,
+      "height_m": 12000,
+      "heading_deg": 0,
+      "pitch_deg": -90
+    }
+  }
+}

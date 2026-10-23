@@ -1,0 +1,11 @@
+{
+  "crs": "local_enu",
+  "anchor_wgs84": {
+    "latitude": 29.3015,
+    "longitude": -94.79565,
+    "comment": "Local ENU origin for exported GLB assets (centroid of demonstration bbox)."
+  },
+  "comment": "Model placed at anchor using Cesium East-North-Up frame; verify rotation during validation.",
+  "recommended_heading_deg": 0,
+  "scale": 1.0
+}
