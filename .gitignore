@@ -17,8 +17,10 @@ data/processed/**
 data/manifests/*.json
 assets/**
 !assets/.gitkeep
-apps/web/public/assets/galveston/*.glb
+# Cesium runtime copy is generated at build (prebuild); do not commit
 apps/web/public/cesium/
+# Keep the demonstration GLB in repo for Vercel/static hosting (~6 MB)
+!apps/web/public/assets/galveston/galveston-demo.glb
 
 # OSM2World distribution (download via script)
 geospatial/osm2world/OSM2World-*.zip
