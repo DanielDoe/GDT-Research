@@ -103,7 +103,13 @@ export interface JobRecord {
 }
 
 function apiBase(): string {
-  return process.env.NEXT_PUBLIC_GDT_API_BASE ?? "http://127.0.0.1:8000";
+  const configured = (process.env.NEXT_PUBLIC_GDT_API_BASE ?? "").trim().replace(/\/$/, "");
+  if (configured) return configured;
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") return "http://127.0.0.1:8000";
+  }
+  return "";
 }
 
 export function datasetDownloadUrl(datasetId: string): string {
@@ -122,10 +128,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       },
     });
   } catch {
+    const base = apiBase();
     throw new Error(
-      "The research API is not reachable at " +
-        apiBase() +
-        ". Start it with: .\\.venv\\Scripts\\python.exe -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000",
+      base
+        ? `The research API is not reachable at ${base}. Start it with: .\\.venv\\Scripts\\python.exe -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000`
+        : "The research catalog on this site did not respond. Reload the page.",
     );
   }
   const text = await response.text();
