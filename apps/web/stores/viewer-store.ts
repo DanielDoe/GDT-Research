@@ -51,7 +51,7 @@ export interface LayerVisibility {
 export interface ViewerStatus {
   ionTokenPresent: boolean;
   arcGisTokenPresent: boolean;
-  terrainSource: "cesium_world" | "ellipsoid" | "demo_epqs_heightmap";
+  terrainSource: "cesium_world" | "ellipsoid" | "demo_epqs_heightmap" | "arcgis_world_elevation";
   imagerySource: string;
   satelliteImageryKind: SatelliteImageryKind | null;
   satelliteImageryDetail: string | null;
